@@ -24,8 +24,8 @@ class MagazineManagementSystem implements IPostDBLoadMod {
   } | null = null;
   private readonly configPath = path.resolve(__dirname, "../config/config.jsonc");
   private readonly defaultConfig = {
-    "ammo.loadspeed": 0.5,
-    "ammo.unloadspeed": 0.5,
+    "ammo.loadspeed": 0.85,
+    "ammo.unloadspeed": 0.3,
     "min.MagazineSize": 10,
     "max.MagazineSize": 60,
     "useGlobalTimes": false,
@@ -118,11 +118,14 @@ class MagazineManagementSystem implements IPostDBLoadMod {
         this.logger.info("[MMS] Config file not found. Creating default.");
         const configContent = JSON.stringify(this.defaultConfig, null, 2) +
           "\n// Default config created. Adjust values as needed.\n" +
-          "// ammo.loadspeed and ammo.unloadspeed: 0 to 1, min.MagazineSize: -1, 2-60, max.MagazineSize: -1, 10-100\n" +
+          "// ammo.loadspeed and ammo.unloadspeed: 0 to 1\n" +
+		  "// min.MagazineSize: -1, 2-60 (-1 no min size)\n" +
+		  "// max.MagazineSize: -1, 10-100 (-1 no max size)\n" +
           "// useGlobalTimes: true for global times, false for per-magazine\n" +
           "// baseLoadTime and baseUnloadTime: 0.01 to 1, 2 decimals\n" +
           "// DisableMagazineAmmoLoadPenalty: true to set LoadUnloadModifier to 0\n" +
-          "// Resize3to2SlotMagazine: true to resize 3x1 magazines to 2x1";
+          "// Resize3to2SlotMagazine: true to resize 3x1 magazines to 2x1\n" +
+		  "// Default Vanilla values are 0.85 (Load) and 0.3 (Unload)";
         writeFileSync(this.configPath, configContent, "utf-8");
         this.config = { ...this.defaultConfig };
         isDefaultConfigCreated = true;
@@ -156,8 +159,8 @@ class MagazineManagementSystem implements IPostDBLoadMod {
     const originalConfig = JSON.parse(JSON.stringify(this.config));
     let warnings: string[] = [];
 
-    if (this.config["ammo.loadspeed"] === undefined) warnings.push("ammo.loadspeed"), this.config["ammo.loadspeed"] = 0.5;
-    if (this.config["ammo.unloadspeed"] === undefined) warnings.push("ammo.unloadspeed"), this.config["ammo.unloadspeed"] = 0.5;
+    if (this.config["ammo.loadspeed"] === undefined) warnings.push("ammo.loadspeed"), this.config["ammo.loadspeed"] = 0.85;
+    if (this.config["ammo.unloadspeed"] === undefined) warnings.push("ammo.unloadspeed"), this.config["ammo.unloadspeed"] = 0.3;
     if (this.config["min.MagazineSize"] === undefined) warnings.push("min.MagazineSize"), this.config["min.MagazineSize"] = 10;
     if (this.config["max.MagazineSize"] === undefined) warnings.push("max.MagazineSize"), this.config["max.MagazineSize"] = 60;
     if (this.config["useGlobalTimes"] === undefined) warnings.push("useGlobalTimes"), this.config["useGlobalTimes"] = false;
