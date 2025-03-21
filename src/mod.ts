@@ -93,8 +93,10 @@ class MagazineManagementSystem implements IPostDBLoadMod {
     }
 
     if (this.config!.useGlobalTimes) {
+      this.logger.info("[MMS] Globally using load-/unload times");
       this.adjustGlobalTimes(tables);
     } else {
+      this.logger.info("[MMS] GlobalTimes disabled - using Magazine Load-/Unload Times.");
       this.adjustMagazineSpeeds(items);
     }
     if (this.config!.DisableMagazineAmmoLoadPenalty) this.adjustLoadPenalty(items);
@@ -119,13 +121,13 @@ class MagazineManagementSystem implements IPostDBLoadMod {
         const configContent = JSON.stringify(this.defaultConfig, null, 2) +
           "\n// Default config created. Adjust values as needed.\n" +
           "// ammo.loadspeed and ammo.unloadspeed: 0 to 1\n" +
-		  "// min.MagazineSize: -1, 2-60 (-1 no min size)\n" +
-		  "// max.MagazineSize: -1, 10-100 (-1 no max size)\n" +
+          "// min.MagazineSize: -1, 2-60 (-1 no min size)\n" +
+          "// max.MagazineSize: -1, 10-100 (-1 no max size)\n" +
           "// useGlobalTimes: true for global times, false for per-magazine\n" +
           "// baseLoadTime and baseUnloadTime: 0.01 to 1, 2 decimals\n" +
           "// DisableMagazineAmmoLoadPenalty: true to set LoadUnloadModifier to 0\n" +
           "// Resize3to2SlotMagazine: true to resize 3x1 magazines to 2x1\n" +
-		  "// Default Vanilla values are 0.85 (Load) and 0.3 (Unload)";
+          "// Default Vanilla values are 0.85 (Load) and 0.3 (Unload)";
         writeFileSync(this.configPath, configContent, "utf-8");
         this.config = { ...this.defaultConfig };
         isDefaultConfigCreated = true;
@@ -156,7 +158,6 @@ class MagazineManagementSystem implements IPostDBLoadMod {
       return;
     }
 
-    const originalConfig = JSON.parse(JSON.stringify(this.config));
     let warnings: string[] = [];
 
     if (this.config["ammo.loadspeed"] === undefined) warnings.push("ammo.loadspeed"), this.config["ammo.loadspeed"] = 0.85;
@@ -172,11 +173,11 @@ class MagazineManagementSystem implements IPostDBLoadMod {
 
     if (!this.config.useGlobalTimes) {
       let loadSpeed = typeof this.config["ammo.loadspeed"] === "string" ? parseFloat(this.config["ammo.loadspeed"].replace(",", ".")) : this.config["ammo.loadspeed"];
-      if (typeof loadSpeed !== "number" || isNaN(loadSpeed) || loadSpeed < 0 || loadSpeed > 1) warnings.push("ammo.loadspeed invalid"), this.config["ammo.loadspeed"] = 1;
+      if (typeof loadSpeed !== "number" || isNaN(loadSpeed) || loadSpeed < 0 || loadSpeed > 1) warnings.push("ammo.loadspeed invalid"), this.config["ammo.loadspeed"] = 0.85;
       else this.config["ammo.loadspeed"] = Math.round(loadSpeed * 100) / 100;
 
       let unloadSpeed = typeof this.config["ammo.unloadspeed"] === "string" ? parseFloat(this.config["ammo.unloadspeed"].replace(",", ".")) : this.config["ammo.unloadspeed"];
-      if (typeof unloadSpeed !== "number" || isNaN(unloadSpeed) || unloadSpeed < 0 || unloadSpeed > 1) warnings.push("ammo.unloadspeed invalid"), this.config["ammo.unloadspeed"] = 1;
+      if (typeof unloadSpeed !== "number" || isNaN(unloadSpeed) || unloadSpeed < 0 || unloadSpeed > 1) warnings.push("ammo.unloadspeed invalid"), this.config["ammo.unloadspeed"] = 0.3;
       else this.config["ammo.unloadspeed"] = Math.round(unloadSpeed * 100) / 100;
 
       if (typeof this.config["min.MagazineSize"] !== "number" || (this.config["min.MagazineSize"] !== -1 && (this.config["min.MagazineSize"] < 2 || this.config["min.MagazineSize"] > 60)))
@@ -191,12 +192,20 @@ class MagazineManagementSystem implements IPostDBLoadMod {
     if (typeof this.config.useGlobalTimes !== "boolean") warnings.push("useGlobalTimes invalid"), this.config.useGlobalTimes = false;
     if (this.config.useGlobalTimes) {
       let baseLoadTime = typeof this.config["baseLoadTime"] === "string" ? parseFloat(this.config["baseLoadTime"].replace(",", ".")) : this.config["baseLoadTime"];
-      if (typeof baseLoadTime !== "number" || isNaN(baseLoadTime) || baseLoadTime < 0.01 || baseLoadTime > 1) warnings.push("baseLoadTime invalid"), this.config["baseLoadTime"] = 0.85;
-      else this.config["baseLoadTime"] = Math.round(baseLoadTime * 100) / 100;
+      if (typeof baseLoadTime !== "number" || isNaN(baseLoadTime) || baseLoadTime < 0.01 || baseLoadTime > 1) {
+        warnings.push("baseLoadTime invalid");
+        this.config["baseLoadTime"] = baseLoadTime < 0.01 ? 0.01 : 1; // Clamp to 0.01 or 1 if out of range
+      } else {
+        this.config["baseLoadTime"] = Math.round(baseLoadTime * 100) / 100; // Round to 2 decimals
+      }
 
       let baseUnloadTime = typeof this.config["baseUnloadTime"] === "string" ? parseFloat(this.config["baseUnloadTime"].replace(",", ".")) : this.config["baseUnloadTime"];
-      if (typeof baseUnloadTime !== "number" || isNaN(baseUnloadTime) || baseUnloadTime < 0.01 || baseUnloadTime > 1) warnings.push("baseUnloadTime invalid"), this.config["baseUnloadTime"] = 0.3;
-      else this.config["baseUnloadTime"] = Math.round(baseUnloadTime * 100) / 100;
+      if (typeof baseUnloadTime !== "number" || isNaN(baseUnloadTime) || baseUnloadTime < 0.01 || baseUnloadTime > 1) {
+        warnings.push("baseUnloadTime invalid");
+        this.config["baseUnloadTime"] = baseUnloadTime < 0.01 ? 0.01 : 1; // Clamp to 0.01 or 1 if out of range
+      } else {
+        this.config["baseUnloadTime"] = Math.round(baseUnloadTime * 100) / 100; // Round to 2 decimals
+      }
     }
 
     if (typeof this.config.DisableMagazineAmmoLoadPenalty !== "boolean") warnings.push("DisableMagazineAmmoLoadPenalty invalid"), this.config.DisableMagazineAmmoLoadPenalty = false;
@@ -217,13 +226,7 @@ class MagazineManagementSystem implements IPostDBLoadMod {
         this.logger.info("[MMS] Default config created; no write-back.");
       }
     } else {
-      const originalConfigStr = JSON.stringify(originalConfig);
-      const validatedConfigStr = JSON.stringify(this.config);
-      if (originalConfigStr === validatedConfigStr) {
-        this.logger.info("[MMS] Config validated; no changes needed.");
-      } else {
-        this.logger.info("[MMS] Config validated; only comment differences detected, skipping write-back.");
-      }
+      this.logger.info("[MMS] Config validated; no changes needed.");
     }
   }
 
@@ -303,7 +306,7 @@ class MagazineManagementSystem implements IPostDBLoadMod {
 
         if (itemProps.Height === 3 && itemProps.Width === 1) {
           itemProps.Height = 2;
-          itemProps.ExtraSizeDown = 1; // Added to adjust effective size
+          itemProps.ExtraSizeDown = 1;
           if (this.config!.debug) {
             this.logger.info(`[MMS] Resized ${dbItems[item]._name ?? item}: Height=${itemProps.Height}, Width=${itemProps.Width}, ExtraSizeDown=${itemProps.ExtraSizeDown}`);
           }
@@ -313,26 +316,26 @@ class MagazineManagementSystem implements IPostDBLoadMod {
   }
 
   private adjustGlobalTimes(tables: ReturnType<DatabaseServer["getTables"]>): void {
-    if (!tables.globals?.config?.SkillsSettings?.Reloading) {
+    if (!tables.globals?.config) {
       const needsAdjustment = this.config!.useGlobalTimes && (
-        tables.globals?.config?.SkillsSettings?.Reloading?.BaseLoadTime !== this.config!["baseLoadTime"] ||
-        tables.globals?.config?.SkillsSettings?.Reloading?.BaseUnloadTime !== this.config!["baseUnloadTime"]
+        tables.globals?.config?.BaseLoadTime !== this.config!["baseLoadTime"] ||
+        tables.globals?.config?.BaseUnloadTime !== this.config!["baseUnloadTime"]
       );
       if (needsAdjustment || this.config!.debug) {
-        this.logger.error("[MMS] Globals or Reloading settings null; skipping global time adjustments.");
+        this.logger.error("[MMS] Globals or Reloading settings null; cannot apply global times.");
       }
       return;
     }
 
-    const reloadingSettings = tables.globals.config.SkillsSettings.Reloading;
+    const globals = tables.globals;
     const changes = [];
-    if (reloadingSettings.BaseLoadTime !== this.config!["baseLoadTime"]) {
-      changes.push(`BaseLoadTime=${reloadingSettings.BaseLoadTime}->${this.config!["baseLoadTime"]}`);
-      reloadingSettings.BaseLoadTime = this.config!["baseLoadTime"];
+    if (globals.config.BaseLoadTime !== this.config!["baseLoadTime"]) {
+      changes.push(`BaseLoadTime=${globals.config.BaseLoadTime}->${this.config!["baseLoadTime"]}`);
+      globals.config.BaseLoadTime = this.config!["baseLoadTime"]; // Change the base loading time of the magazines (vanilla default: 0.85)
     }
-    if (reloadingSettings.BaseUnloadTime !== this.config!["baseUnloadTime"]) {
-      changes.push(`BaseUnloadTime=${reloadingSettings.BaseUnloadTime}->${this.config!["baseUnloadTime"]}`);
-      reloadingSettings.BaseUnloadTime = this.config!["baseUnloadTime"];
+    if (globals.config.BaseUnloadTime !== this.config!["baseUnloadTime"]) {
+      changes.push(`BaseUnloadTime=${globals.config.BaseUnloadTime}->${this.config!["baseUnloadTime"]}`);
+      globals.config.BaseUnloadTime = this.config!["baseUnloadTime"]; // Change the base unloading time of the magazines (vanilla default: 0.3)
     }
 
     if (this.config!.debug && changes.length > 0) {
