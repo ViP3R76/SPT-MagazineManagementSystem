@@ -41,14 +41,17 @@ Edit `config/config.jsonc` in the mod folder. A default config is created on fir
 
 ---
 ## Changelog
+1.0.1
+- **Bugfix**: Changed default config-generation settings
+- **Bugfix**: Forgot to change the sizedown on 3-2 slot conversion for inventory optic of the weapon
+- **Note**: Pushed to the HUB for downloads
 1.0.0
-## Changes:
 - **Features**: Updated to include all current capabilities (split functions, logging, config logic).
 - **Configuration**: Matches the exact options and defaults from `src/mod.ts`, with concise descriptions.
 - **Logging**: Documented the minimalistic approach and debug toggle.
 - **Installation**: Kept generic but added a note about dependencies.
-- **Features: speed adjustments, load penalty toggle, magazine resizing, minimal logging.
-- **Initial release for SPT 3.11.
+- **Features**: speed adjustments, load penalty toggle, magazine resizing, minimal logging.
+- **Initial release for SPT 3.11.x**
 
 ## Troubleshooting
     Enable debug: true in config.jsonc and check logs in user/logs/.
