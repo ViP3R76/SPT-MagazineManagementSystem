@@ -1,0 +1,21 @@
+{
+  "ammo.loadspeed": 0.85,
+  "ammo.unloadspeed": 0.3,
+  "min.MagazineSize": 10,
+  "max.MagazineSize": 60,
+  "useGlobalTimes": false,
+  "baseLoadTime": 0.85,
+  "baseUnloadTime": 0.3,
+  "DisableMagazineAmmoLoadPenalty": false,
+  "Resize3to2SlotMagazine": false,
+  "debug": false
+}
+// Default config created. Adjust values as needed.
+// ammo.loadspeed and ammo.unloadspeed: 0 to 1,
+// min.MagazineSize: -1, 2-60,
+// max.MagazineSize: -1, 10-100
+// useGlobalTimes: true for global times, false for per-magazine
+// baseLoadTime and baseUnloadTime: 0.01 to 1, 2 decimals
+// DisableMagazineAmmoLoadPenalty: true to set LoadUnloadModifier to 0
+// Resize3to2SlotMagazine: true to resize 3x1 magazines to 2x1
+// Vanilla Timings are 0.85 (baseLoadTime) and 0.3 (baseUnloadTime)
