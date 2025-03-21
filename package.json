@@ -1,6 +1,6 @@
 {
   "name": "[MMS] Magazine Management System",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "sptVersion": "~3.11",
   "description": "Magazine Management System (MMS) with individual features for SPT 3.11",
   "loadBefore": [],
