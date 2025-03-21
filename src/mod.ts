@@ -158,6 +158,7 @@ class MagazineManagementSystem implements IPostDBLoadMod {
       return;
     }
 
+    const originalConfig = JSON.parse(JSON.stringify(this.config)); // Deep copy of original config
     let warnings: string[] = [];
 
     if (this.config["ammo.loadspeed"] === undefined) warnings.push("ammo.loadspeed"), this.config["ammo.loadspeed"] = 0.85;
@@ -215,12 +216,18 @@ class MagazineManagementSystem implements IPostDBLoadMod {
     if (warnings.length > 0) {
       this.logger.warning(`[MMS] Config issues: ${warnings.join(", ")} - defaults applied`);
       if (!isDefaultConfigCreated) {
-        try {
-          const configContent = JSON.stringify(this.config, null, 2) + "\n// Updated with validated values\n// See initial comments for details";
-          writeFileSync(this.configPath, configContent, "utf-8");
-          this.logger.info("[MMS] Config validated and written back due to changes.");
-        } catch (error) {
-          this.logger.error(`[MMS] Config write-back failed: ${error.message}`);
+        const originalConfigStr = JSON.stringify(originalConfig);
+        const validatedConfigStr = JSON.stringify(this.config);
+        if (originalConfigStr === validatedConfigStr) {
+          this.logger.info("[MMS] Config validated; only comment differences detected, skipping write-back.");
+        } else {
+          try {
+            const configContent = JSON.stringify(this.config, null, 2) + "\n// Updated with validated values\n// See initial comments for details";
+            writeFileSync(this.configPath, configContent, "utf-8");
+            this.logger.info("[MMS] Config validated and written back due to changes.");
+          } catch (error) {
+            this.logger.error(`[MMS] Config write-back failed: ${error.message}`);
+          }
         }
       } else {
         this.logger.info("[MMS] Default config created; no write-back.");
