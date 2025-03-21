@@ -1,0 +1,31 @@
+{
+  "name": "[MMS] Magazine Management System",
+  "version": "1.0.0",
+  "sptVersion": "~3.11",
+  "description": "Magazine Management System (MMS) with individual features for SPT 3.11",
+  "loadBefore": [],
+  "loadAfter": [],
+  "incompatibilities": [],
+  "isBundleMod": false,
+  "main": "src/mod.js",
+  "scripts": {
+    "setup": "npm i",
+    "build": "node build.mjs",
+    "buildinfo": "node build.mjs --verbose"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "@typescript-eslint/eslint-plugin": "^7.3.1",
+    "@typescript-eslint/parser": "^7.3.1",
+    "esbuild": "^0.20.2",
+    "eslint": "^8.57.0",
+    "tsyringe": "^4.8.0"
+  },
+  "dependencies": {
+    "@spt/models": "^3.11.0",
+    "@spt/utils": "^3.11.0"
+  },
+  "author": "ViP3R_76",
+  "contributors": [],
+  "license": "MIT"
+}
