@@ -22,13 +22,13 @@ Edit `config/config.jsonc` in the mod folder. A default config is created on fir
 ### Config Options
 ```jsonc
 {
-  "ammo.loadspeed": 0.5,          // Load speed multiplier (0 to 1); unused if useGlobalTimes is true
-  "ammo.unloadspeed": 0.5,        // Unload speed multiplier (0 to 1); applied via CheckOverride
+  "ammo.loadspeed": 0.85,         // Load speed multiplier (0 to 1); unused if useGlobalTimes is true (Lower value=faster)
+  "ammo.unloadspeed": 0.3,        // Unload speed multiplier (0 to 1); unused if useGlobalTimes is true (Lower value=faster)
   "min.MagazineSize": 10,         // Minimum magazine capacity to adjust (2 to 60, or -1 for no min)
   "max.MagazineSize": 60,         // Maximum magazine capacity to adjust (10 to 100, or -1 for no max)
   "useGlobalTimes": false,        // True: use baseLoadTime/baseUnloadTime globally; False: per-magazine speeds
-  "baseLoadTime": 0.85,           // Global load time (0.01 to 1, 2 decimals); used if useGlobalTimes is true
-  "baseUnloadTime": 0.3,          // Global unload time (0.01 to 1, 2 decimals); used if useGlobalTimes is true
+  "baseLoadTime": 0.85,           // Global load time (0.01 to 1, 2 decimals); used if useGlobalTimes is true (Lower value=faster)
+  "baseUnloadTime": 0.3,          // Global unload time (0.01 to 1, 2 decimals); used if useGlobalTimes is true (Lower value=faster)
   "DisableMagazineAmmoLoadPenalty": false, // True: sets LoadUnloadModifier to 0; False: ensures it’s 1
   "Resize3to2SlotMagazine": false, // True: resizes 3x1 magazines to 2x1
   "debug": false                  // True: enables detailed logging
@@ -41,6 +41,11 @@ Edit `config/config.jsonc` in the mod folder. A default config is created on fir
 
 ---
 ## Changelog
+1.0.2
+- **Bugfix**: Added range for baseLoad-/Unload from 0.01 to 1 and added checks for config
+- **Bugfix**: Changed some default config-related stuff
+- **Refactor**: Config-Rewrite skipped if only comments have been changed
+
 1.0.1
 - **Bugfix**: Changed default config-generation settings
 - **Bugfix**: Forgot to change the sizedown on 3-2 slot conversion for inventory optic of the weapon
