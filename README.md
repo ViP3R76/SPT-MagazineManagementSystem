@@ -45,6 +45,7 @@ Edit `config/config.jsonc` in the mod folder. A default config is created on fir
 - **Bugfix**: Changed default config-generation settings
 - **Bugfix**: Forgot to change the sizedown on 3-2 slot conversion for inventory optic of the weapon
 - **Note**: Pushed to the HUB for downloads
+  
 1.0.0
 - **Features**: Updated to include all current capabilities (split functions, logging, config logic).
 - **Configuration**: Matches the exact options and defaults from `src/mod.ts`, with concise descriptions.
